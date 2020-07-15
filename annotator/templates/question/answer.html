@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Annotate a datapoint{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    {% if is_view %}
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+      <p class="lead">
+          Assigned to the user "{{ username }}".
+          {% if answer %}
+            The answer is "{{ answer }}".
+          {% endif %}
+      </p>
+    </div>
+    {% endif %}
+  <div class="card-deck mb-3 text-center">
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal">Context</h4>
+      </div>
+      <div class="card-body">
+          <img src="{{ url_for('static', filename='images/contexts/'+image_path) }}" width="250" >
+      </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal">Content Description</h4>
+      </div>
+      <div class="card-body">
+        <h1 class="card-title pricing-card-title">{{  content_description }}</h1>
+          <hr>
+        <p>
+                Does it make sense?
+        </p>
+          <div class="row">
+              <div class="col-md-6" disabled="true">
+                <button type="button" class="btn btn-lg btn-block btn-primary" id="btn_q1y" onClick="answer_q1('y')">Yes</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" class="btn btn-lg btn-block btn-warning" id="btn_q1n" onClick="answer_q1('n')">No</button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal">Icon</h4>
+      </div>
+      <div class="card-body d-none" id="q2_card">
+        <img src="{{ url_for('static', filename='images/icons/'+image_path) }}" class="rounded mx-auto d-block" style="max-width: 100px;" >
+        <hr>
+          <p>
+                Does it make sense?
+        </p>
+        <div class="row">
+              <div class="col-md-6">
+                <button type="button" class="btn btn-lg btn-block btn-primary" id="btn_q2y" onClick="answer_q2('y')">Yes</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" class="btn btn-lg btn-block btn-warning" id="btn_q2n" onClick="answer_q2('n')">No</button>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+    <div class="px-3 pb-md-4 mx-auto text-center d-none" id="submit_div">
+      <form method="post">
+        <input type="hidden" name="q1" value="A">
+        <input type="hidden" name="q2" value="B">
+        <input type="submit" class="btn btn-lg btn-block btn-success" value="Save">
+      </form>
+    </div>
+  <hr>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script>
+        function answer_q1(choice){
+            if (choice === 'y') {
+                $("#btn_q1y").attr('disabled', true);
+                $("#btn_q1n").css("visibility", 'hidden');
+            }
+            else{
+                $("#btn_q1n").attr('disabled', true);
+                $("#btn_q1y").css("visibility", 'hidden');
+            }
+            $("input[name='q1']").val(choice);
+            $("#q2_card").removeClass("d-none");
+        }
+
+        function answer_q2(choice){
+            if (choice === 'y') {
+                $("#btn_q2y").attr('disabled', true);
+                $("#btn_q2n").css("visibility", 'hidden');
+            }
+            else{
+                $("#btn_q2n").attr('disabled', true);
+                $("#btn_q2y").css("visibility", 'hidden');
+            }
+            $("input[name='q2']").val(choice);
+            $("#submit_div").removeClass("d-none");
+        }
+        {% if is_view %}
+            $("button").attr('disabled', true);
+            $("input").attr('disabled', true);
+            $(".d-none").removeClass("d-none");
+        {% endif %}
+    </script>
+
+{% endblock %}

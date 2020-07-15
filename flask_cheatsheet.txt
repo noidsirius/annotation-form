@@ -1,0 +1,1 @@
+(export FLASK_APP=annotator; export FLASK_ENV=development; flask run)

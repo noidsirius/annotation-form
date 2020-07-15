@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Annotation Tasks{% endblock %}</h1>
+{#  {% if g.user %}#}
+{#    <a class="action" href="{{ url_for('question.create') }}">New</a>#}
+{#  {% endif %}#}
+{% endblock %}
+
+{% block content %}
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+      <p class="lead">
+      {% if remaining_count == 0 %}
+        You don't have any annotation left. Good job!
+      {% else %}
+        You have {{ remaining_count }} annotation assignment{% if remaining_count > 1 %}s{% endif %}.
+      {% endif %}
+      </p>
+    <p>You already annotated {{ answered_count }} tasks!</p>
+    {% if remaining_count > 0 %}
+        <div class="px-3 pb-md-4 mx-auto text-center">
+            <a class="btn btn-lg btn-block btn-success" href="{{ url_for('question.next_task') }}">Annotate next task!</a>
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}
