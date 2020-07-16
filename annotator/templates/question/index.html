@@ -2,9 +2,6 @@
 
 {% block header %}
   <h1>{% block title %}Annotation Tasks{% endblock %}</h1>
-{#  {% if g.user %}#}
-{#    <a class="action" href="{{ url_for('question.create') }}">New</a>#}
-{#  {% endif %}#}
 {% endblock %}
 
 {% block content %}
@@ -16,7 +13,7 @@
         You have {{ remaining_count }} annotation assignment{% if remaining_count > 1 %}s{% endif %}.
       {% endif %}
       </p>
-    <p>You already annotated {{ answered_count }} tasks!</p>
+    <p>You already annotated {{ answered_count }} tasks! See your tasks <a href="{{ url_for('question.all_annotation') }}">here</a>.</p>
     {% if remaining_count > 0 %}
         <div class="px-3 pb-md-4 mx-auto text-center">
             <a class="btn btn-lg btn-block btn-success" href="{{ url_for('question.next_task') }}">Annotate next task!</a>

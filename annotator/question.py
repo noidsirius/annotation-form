@@ -92,15 +92,93 @@ def update(id):
     return render_template('question/answer.html', image_path=image_path, content_description=content_description)
 
 
-@bp.route('/<int:id>/view', methods=('GET',))
+@bp.route('/<int:id>/clear', methods=('POST',))
+@login_required
+def clear(id):
+    if request.method == 'POST':
+        db = get_db()
+        db.execute(
+            'UPDATE assigned SET state = 0, body = ""'
+            ' WHERE id = ?',
+            (id)
+        )
+        db.commit()
+        return redirect(url_for('question.update', id))
+    return redirect(url_for('question.next_task'))
+
+
+
+@bp.route('/<int:id>/view', methods=('GET', 'POST'))
 @login_required
 def view(id):
+    if request.method == 'POST':
+        assigned_datapoint = get_assigned_datapoint(id, check_author=True, state=1)
+        db = get_db()
+        db.execute(
+            'UPDATE assigned SET state = 0, body = ""'
+            ' WHERE id = ?',
+            (id,)
+        )
+        db.commit()
+        return redirect(url_for('question.update', id=id))
     assigned_datapoint = get_assigned_datapoint(id, check_author=False)
     image_path = assigned_datapoint['description']
     content_description = image_path[image_path.find('_')+1:image_path.rfind('.')]
-    answer = " ".join([f"Q{i+1}: {x}" for i,x in enumerate(assigned_datapoint['body'].split("%"))])
+    answer = None
+    if assigned_datapoint['body'] is not None:
+        answer = " ".join([f"Q{i+1}: {x}" for i,x in enumerate(assigned_datapoint['body'].split("%"))])
+
     db = get_db()
     username = db.execute('SELECT username FROM user WHERE id = ?', (assigned_datapoint['user_id'],)).fetchone()[
         'username']
     return render_template('question/answer.html', image_path=image_path, content_description=content_description,
                            is_view=True, answer=answer, username=username)
+
+
+@bp.route('/user/', defaults={'username': None})
+@bp.route('/user/<string:username>')
+@login_required
+def all_annotation(username):
+    if username is None:
+        username = g.user['username']
+    assigned_datapoints = get_db().execute(
+        'SELECT a.id, a.user_id, a.datapoint_id as dp_id, dp.description, a.state, a.body, u.username'
+        ' FROM assigned a'
+        ' JOIN datapoint dp ON a.datapoint_id = dp.id'
+        ' JOIN user u ON a.user_id = u.id'
+        ' WHERE (u.username = ?)',
+        (username,)
+    ).fetchall()
+    return render_template('question/all_annotations.html', assigned_datapoints=assigned_datapoints)
+
+
+@bp.route('/dp/<int:id>')
+@login_required
+def datapoint(id):
+    assigned_datapoints = get_db().execute(
+        'SELECT a.id, a.user_id, a.datapoint_id as dp_id, dp.description, a.state, a.body, u.username'
+        ' FROM assigned a'
+        ' JOIN datapoint dp ON a.datapoint_id = dp.id'
+        ' JOIN user u ON a.user_id = u.id'
+        ' WHERE (dp.id = ?)',
+        (id,)
+    ).fetchall()
+    if not assigned_datapoints:
+        datapoint = get_db().execute(
+            'SELECT * FROM datapoint WHERE id = ?', (id,)
+        ).fetchone()
+        if datapoint is None:
+            abort(404, "Datapoint id {0} doesn't exist.".format(id))
+        datapoint = datapoint['description']
+    else:
+        datapoint = assigned_datapoints[0]['description']
+    return render_template('question/datapoint.html', assigned_datapoints=assigned_datapoints, datapoint=datapoint)
+
+
+@bp.route('/dp')
+@login_required
+def datapoint_list():
+    datapoints = get_db().execute(
+        'SELECT * FROM datapoint'
+    ).fetchall()
+    return render_template('question/datapoint_list.html', datapoints=datapoints)

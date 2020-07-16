@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Datapoint{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <h4>Data</h4>
+    <div class="card-deck mb-2 text-center">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Context</h4>
+          </div>
+          <div class="card-body">
+              <img src="{{ url_for('static', filename='images/contexts/'+datapoint) }}" width="250" >
+          </div>
+        </div>
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Content Description (CD)</h4>
+          </div>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">{{  datapoint }}</h1>
+          </div>
+            <div class="card-header card-footer">
+                <h4 class="my-0 font-weight-normal">Icon</h4>
+            </div>
+          <div class="card-body" >
+            <img id="img_icon" src="{{ url_for('static', filename='images/icons/'+datapoint) }}" class="rounded mx-auto" style="max-width: 100px;" >
+          </div>
+
+        </div>
+    </div>
+    <hr>
+    <h4>Annotations</h4>
+
+
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Username</th>
+      <th scope="col">View</th>
+      <th scope="col">Answer</th>
+    </tr>
+  </thead>
+  <tbody>
+
+        {% for a in assigned_datapoints %}
+            <tr>
+              <th scope="row">{{ loop.index }}</th>
+              <td>{{ a['username'] }}</td>
+              <td>
+                  {% if a['state'] == 0 %}
+                      <a href="{{ url_for('question.update', id=a['id']) }}">Edit</a>
+                  {% else %}
+                    <a href="{{ url_for('question.view', id=a['id']) }}">View</a>
+                  {% endif %}
+              </td>
+              <td>{{ a['body'] }}</td>
+
+            </tr>
+        {% endfor %}
+
+
+  </tbody>
+</table>
+{% endblock %}

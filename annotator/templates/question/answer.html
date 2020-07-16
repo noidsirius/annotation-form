@@ -13,6 +13,11 @@
             The answer is "{{ answer }}".
           {% endif %}
       </p>
+        {% if username == g.user['username'] and answer %}
+              <form method="post">
+                <input id="input_clear" type="submit" class="btn btn-lg btn-block btn-danger" value="Clear this annotation">
+              </form>
+        {%  endif %}
     </div>
     {% endif %}
   <div class="card-deck mb-3 text-center">
@@ -26,53 +31,73 @@
     </div>
     <div class="card mb-4 shadow-sm">
       <div class="card-header">
-        <h4 class="my-0 font-weight-normal">Content Description</h4>
+        <h4 class="my-0 font-weight-normal">Content Description (CD)</h4>
       </div>
       <div class="card-body">
         <h1 class="card-title pricing-card-title">{{  content_description }}</h1>
-          <hr>
-        <p>
-                Does it make sense?
-        </p>
-          <div class="row">
-              <div class="col-md-6" disabled="true">
-                <button type="button" class="btn btn-lg btn-block btn-primary" id="btn_q1y" onClick="answer_q1('y')">Yes</button>
-              </div>
-              <div class="col-md-6">
-                <button type="button" class="btn btn-lg btn-block btn-warning" id="btn_q1n" onClick="answer_q1('n')">No</button>
-              </div>
-          </div>
       </div>
+        <div class="card-header card-footer">
+            <h4 class="my-0 font-weight-normal">Icon</h4>
+        </div>
+      <div class="card-body" >
+        <img id="img_icon" src="{{ url_for('static', filename='images/icons/'+image_path) }}" class="rounded mx-auto d-none" style="max-width: 100px;" >
+      </div>
+
     </div>
     <div class="card mb-4 shadow-sm">
       <div class="card-header">
-        <h4 class="my-0 font-weight-normal">Icon</h4>
+        <h4 class="my-0 font-weight-normal">Questions</h4>
       </div>
-      <div class="card-body d-none" id="q2_card">
-        <img src="{{ url_for('static', filename='images/icons/'+image_path) }}" class="rounded mx-auto d-block" style="max-width: 100px;" >
-        <hr>
-          <p>
-                Does it make sense?
-        </p>
-        <div class="row">
-              <div class="col-md-6">
-                <button type="button" class="btn btn-lg btn-block btn-primary" id="btn_q2y" onClick="answer_q2('y')">Yes</button>
-              </div>
-              <div class="col-md-6">
-                <button type="button" class="btn btn-lg btn-block btn-warning" id="btn_q2n" onClick="answer_q2('n')">No</button>
-              </div>
-          </div>
-      </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <p class="lead">
+                    Does CD describe the functionality of the empty box in the context?
+                </p>
+                  <div class="row">
+                      <div class="col-md-6" disabled="true">
+                        <button type="button" class="btn btn-lg btn-block btn-primary" id="btn_q1y" onClick="answer_q1('y')">Yes</button>
+                      </div>
+                      <div class="col-md-6">
+                        <button type="button" class="btn btn-lg btn-block btn-warning" id="btn_q1n" onClick="answer_q1('n')">No</button>
+                      </div>
+                  </div>
+            </li>
+            <li class="list-group-item">
+                <div id="q2_card" class="d-none">
+                    <p class="lead">
+                        Are the content description and icon related?
+                    </p>
+                    <div class="row">
+                          <div class="col-md-6">
+                            <button type="button" class="btn btn-lg btn-block btn-primary" id="btn_q2y" onClick="answer_q2('y')">Yes</button>
+                          </div>
+                          <div class="col-md-6">
+                            <button type="button" class="btn btn-lg btn-block btn-warning" id="btn_q2n" onClick="answer_q2('n')">No</button>
+                          </div>
+                      </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="d-none" id="submit_div">
+                      <form method="post">
+                        <input type="hidden" name="q1" value="A">
+                        <input type="hidden" name="q2" value="B">
+                        <input type="submit" class="btn btn-lg btn-block btn-success" value="Save">
+                      </form>
+                </div>
+            </li>
+            {% if not is_view %}
+                <li class="list-group-item">
+                    <div class="d-none" id="clear_div">
+                        <button  class="btn btn-lg btn-block btn-danger" onClick="location.reload()">Clear answers</button>
+                    </div>
+                </li>
+            {% endif %}
+
+          </ul>
+
     </div>
   </div>
-    <div class="px-3 pb-md-4 mx-auto text-center d-none" id="submit_div">
-      <form method="post">
-        <input type="hidden" name="q1" value="A">
-        <input type="hidden" name="q2" value="B">
-        <input type="submit" class="btn btn-lg btn-block btn-success" value="Save">
-      </form>
-    </div>
-  <hr>
 {% endblock %}
 
 {% block script %}
@@ -89,6 +114,9 @@
             }
             $("input[name='q1']").val(choice);
             $("#q2_card").removeClass("d-none");
+            $("#img_icon").removeClass("d-none");
+            $("#img_icon").addClass("d-block");
+            $("#clear_div").removeClass("d-none");
         }
 
         function answer_q2(choice){
@@ -107,6 +135,7 @@
             $("button").attr('disabled', true);
             $("input").attr('disabled', true);
             $(".d-none").removeClass("d-none");
+            $("#input_clear").attr('disabled', false);
         {% endif %}
     </script>
 

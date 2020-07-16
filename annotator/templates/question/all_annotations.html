@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Done annotations{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Datapoint</th>
+      <th scope="col">View/Edit</th>
+      <th scope="col">Username</th>
+    </tr>
+  </thead>
+  <tbody>
+
+        {% for a in assigned_datapoints %}
+            <tr>
+              <th scope="row">{{ loop.index }}</th>
+              <td>{{ a['description'] }}</td>
+              <td>
+                  {% if a['state'] == 0 %}
+                      <a href="{{ url_for('question.update', id=a['id']) }}">Edit</a>
+                  {% else %}
+                    <a href="{{ url_for('question.view', id=a['id']) }}">View</a>
+                  {% endif %}
+              </td>
+                <td>{{ a['username'] }}</td>
+            </tr>
+        {% endfor %}
+
+
+  </tbody>
+</table>
+{% endblock %}
