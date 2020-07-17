@@ -72,16 +72,15 @@ def update(id):
     content_description = image_path[image_path.find('_')+1:image_path.rfind('.')]
     if request.method == 'POST':
         print("=============")
-        q1_answer = request.form['q1']
-        q2_answer = request.form['q2']
+        answers = [request.form[f'q{i}'] for i in range(1,5)]
         error = None
-        if not q1_answer or not q2_answer:
+        if not all(answers):
             error = 'You must answer all questions.'
         if error is not None:
             flash(error)
         else:
             db = get_db()
-            answer = '%'.join([q1_answer, q2_answer])
+            answer = '%'.join(answers)
             db.execute(
                 'UPDATE assigned SET state = 1, body = ?'
                 ' WHERE id = ?',

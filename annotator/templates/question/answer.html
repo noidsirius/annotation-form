@@ -42,6 +42,11 @@
       <div class="card-body" >
         <img id="img_icon" src="{{ url_for('static', filename='images/icons/'+image_path) }}" class="rounded mx-auto d-none" style="max-width: 100px;" >
       </div>
+        {% if not is_view %}
+                    <div class="card-body d-none" id="clear_div">
+                        <button  class="btn btn-lg btn-block btn-danger" onClick="location.reload()">Clear the form</button>
+                    </div>
+            {% endif %}
 
     </div>
     <div class="card mb-4 shadow-sm">
@@ -50,49 +55,81 @@
       </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
-                <p class="lead">
-                    Does CD describe the functionality of the empty box in the context?
+                <p class="text-left">
+                    Does the CD describe a valid functionality for the button?
                 </p>
                   <div class="row">
                       <div class="col-md-6" disabled="true">
-                        <button type="button" class="btn btn-lg btn-block btn-primary" id="btn_q1y" onClick="answer_q1('y')">Yes</button>
+                        <button type="button" class="btn btn-block btn-primary" id="btn_q1y" onClick="answer_q1('y')">Yes</button>
                       </div>
                       <div class="col-md-6">
-                        <button type="button" class="btn btn-lg btn-block btn-warning" id="btn_q1n" onClick="answer_q1('n')">No</button>
+                        <button type="button" class="btn  btn-block btn-warning" id="btn_q1n" onClick="answer_q1('n')">No</button>
                       </div>
                   </div>
             </li>
             <li class="list-group-item">
                 <div id="q2_card" class="d-none">
-                    <p class="lead">
-                        Are the content description and icon related?
+                    <p class="text-left">
+                        Do the CD and image icon match?
                     </p>
                     <div class="row">
                           <div class="col-md-6">
-                            <button type="button" class="btn btn-lg btn-block btn-primary" id="btn_q2y" onClick="answer_q2('y')">Yes</button>
+                            <button type="button" class="btn  btn-block btn-primary" id="btn_q2y" onClick="answer_q2('y')">Yes</button>
                           </div>
                           <div class="col-md-6">
-                            <button type="button" class="btn btn-lg btn-block btn-warning" id="btn_q2n" onClick="answer_q2('n')">No</button>
+                            <button type="button" class="btn  btn-block btn-warning" id="btn_q2n" onClick="answer_q2('n')">No</button>
+                          </div>
+                      </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                    <div id="q3_card" class="d-none">
+                        <p class="text-left">
+                            Is the CD concise enough? (extra tokens of app name/click to/ button/...)
+                        </p>
+                        <div class="row">
+                              <div class="col-md-6">
+                                <button type="button" class="btn  btn-block btn-primary" id="btn_q3y" onClick="answer_q3('y')">Yes</button>
+                              </div>
+                              <div class="col-md-6">
+                                <button type="button" class="btn  btn-block btn-warning" id="btn_q3n" onClick="answer_q3('n')">No</button>
+                              </div>
+                          </div>
+                    </div>
+            </li>
+                <li class="list-group-item">
+                <div id="q4_card" class="d-none">
+                    <p class="text-left">
+                        Is the CD confusing? (same as other buttons/requires more context)
+                    </p>
+                    <div class="row">
+                          <div class="col-md-6">
+                            <button type="button" class="btn  btn-block btn-primary" id="btn_q4y" onClick="answer_q4('y')">Yes</button>
+                          </div>
+                          <div class="col-md-6">
+                            <button type="button" class="btn  btn-block btn-warning" id="btn_q4n" onClick="answer_q4('n')">No</button>
                           </div>
                       </div>
                 </div>
             </li>
             <li class="list-group-item">
                 <div class="d-none" id="submit_div">
-                      <form method="post">
-                        <input type="hidden" name="q1" value="A">
-                        <input type="hidden" name="q2" value="B">
-                        <input type="submit" class="btn btn-lg btn-block btn-success" value="Save">
+                      <form method="post" id="my_form">
+                        <input type="hidden" name="q1" value="">
+                        <input type="hidden" name="q2" value="">
+                        <input type="hidden" name="q3" value="">
+                        <input type="hidden" name="q4" value="">
+{#                        <input type="submit" class="btn btn-lg btn-block btn-success" value="Save">#}
                       </form>
                 </div>
             </li>
-            {% if not is_view %}
-                <li class="list-group-item">
-                    <div class="d-none" id="clear_div">
-                        <button  class="btn btn-lg btn-block btn-danger" onClick="location.reload()">Clear answers</button>
-                    </div>
-                </li>
-            {% endif %}
+{#            {% if not is_view %}#}
+{#                <li class="list-group-item">#}
+{#                    <div class="d-none" id="clear_div">#}
+{#                        <button  class="btn btn-lg btn-block btn-danger" onClick="location.reload()">Clear answers</button>#}
+{#                    </div>#}
+{#                </li>#}
+{#            {% endif %}#}
 
           </ul>
 
@@ -129,7 +166,32 @@
                 $("#btn_q2y").css("visibility", 'hidden');
             }
             $("input[name='q2']").val(choice);
-            $("#submit_div").removeClass("d-none");
+            $("#q3_card").removeClass("d-none");
+        }
+        function answer_q3(choice){
+            if (choice === 'y') {
+                $("#btn_q3y").attr('disabled', true);
+                $("#btn_q3n").css("visibility", 'hidden');
+            }
+            else{
+                $("#btn_q3n").attr('disabled', true);
+                $("#btn_q3y").css("visibility", 'hidden');
+            }
+            $("input[name='q3']").val(choice);
+            $("#q4_card").removeClass("d-none");
+        }
+        function answer_q4(choice){
+            if (choice === 'y') {
+                $("#btn_q4y").attr('disabled', true);
+                $("#btn_q4n").css("visibility", 'hidden');
+            }
+            else{
+                $("#btn_q4n").attr('disabled', true);
+                $("#btn_q4y").css("visibility", 'hidden');
+            }
+            $("input[name='q4']").val(choice);
+            $("#my_form").submit()
+            {#$("#submit_div").removeClass("d-none");#}
         }
         {% if is_view %}
             $("button").attr('disabled', true);
