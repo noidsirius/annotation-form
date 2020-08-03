@@ -69,7 +69,11 @@ def get_assigned_datapoint(id, check_author=True, state=None):
 def update(id):
     assigned_datapoint = get_assigned_datapoint(id, state=0)
     image_path = assigned_datapoint['description']
-    content_description = image_path[image_path.find('_')+1:image_path.rfind('.')]
+    first_ = image_path.find('_')
+    second_ = image_path.find('_', first_+1)
+    screen_title = image_path[first_ + 1:second_]
+    content_description = image_path[second_+1:image_path.rfind('.')]
+
     if request.method == 'POST':
         print("=============")
         answers = [request.form[f'q{i}'] for i in range(1,5)]
@@ -88,7 +92,7 @@ def update(id):
             )
             db.commit()
             return redirect(url_for('question.next_task'))
-    return render_template('question/answer.html', image_path=image_path, content_description=content_description)
+    return render_template('question/answer.html', image_path=image_path, content_description=content_description, screen_title = screen_title)
 
 
 @bp.route('/<int:id>/clear', methods=('POST',))
@@ -122,7 +126,10 @@ def view(id):
         return redirect(url_for('question.update', id=id))
     assigned_datapoint = get_assigned_datapoint(id, check_author=False)
     image_path = assigned_datapoint['description']
-    content_description = image_path[image_path.find('_')+1:image_path.rfind('.')]
+    first_ = image_path.find('_')
+    second_ = image_path.find('_', first_ + 1)
+    screen_title = image_path[first_ + 1:second_]
+    content_description = image_path[second_ + 1:image_path.rfind('.')]
     answer = None
     if assigned_datapoint['body'] is not None:
         answer = " ".join([f"Q{i+1}: {x}" for i,x in enumerate(assigned_datapoint['body'].split("%"))])
@@ -130,7 +137,7 @@ def view(id):
     db = get_db()
     username = db.execute('SELECT username FROM user WHERE id = ?', (assigned_datapoint['user_id'],)).fetchone()[
         'username']
-    return render_template('question/answer.html', image_path=image_path, content_description=content_description,
+    return render_template('question/answer.html', image_path=image_path, content_description=content_description, screen_title=screen_title,
                            is_view=True, answer=answer, username=username)
 
 
